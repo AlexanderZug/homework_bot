@@ -95,13 +95,16 @@ def main():
         return False
     while True:
         try:
-            current_timestamp = 0
+            current_timestamp = int(time.time())
             response = get_api_answer(current_timestamp)
             homeworks = check_response(response)
-            if len(homeworks) > 0:
-                send_message(BOT, parse_status(homeworks[0]))
-            logging.info('Es gibt keine Ausgaben')
-            time.sleep(RETRY_TIME)
+            try:
+                if len(homeworks) > 0:
+                    send_message(BOT, parse_status(homeworks[0]))
+                logging.info('Es gibt keine Ausgaben')
+                time.sleep(RETRY_TIME)
+            except TypeError:
+                logging.info('Сервер чудит')
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             send_message(BOT, message)
