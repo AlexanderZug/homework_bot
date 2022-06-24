@@ -93,14 +93,16 @@ def main():
     """Основная логика работы бота."""
     if not check_tokens():
         return False
+    current_timestamp = int(time.time())
     while True:
         try:
-            current_timestamp = int(time.time())
+
             response = get_api_answer(current_timestamp)
             homeworks = check_response(response)
             if len(homeworks) > 0:
                 send_message(BOT, parse_status(homeworks[0]))
             logging.info('Es gibt keine Ausgaben')
+            current_timestamp = response['current_date']
             time.sleep(RETRY_TIME)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
