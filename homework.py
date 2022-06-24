@@ -63,9 +63,9 @@ def get_api_answer(current_timestamp: int) -> dict:
 def check_response(response: dict) -> list:
     """Возврат работ и проверка на корректность данных."""
     if not isinstance(response['homeworks'], list):
-        logging.error('Где же мой лист?!')
-        send_message(BOT, 'Прости, но лист я так и не нашел...')
-        raise BotException('Keine Liste, keine Probleme')
+        logging.error('Не список')
+        send_message(BOT, 'Нужен список')
+        raise BotException('Некорректный тип данных')
     return response['homeworks']
 
 
