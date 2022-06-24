@@ -73,6 +73,10 @@ def parse_status(homework):
     """Проверка статуса работы."""
     homework_name = homework['homework_name']
     homework_status = homework['status']
+    if homework_status not in HOMEWORK_STATUSES:
+        logging.error('Статуса нет')
+        send_message(BOT, 'Вот и нет у тебя больше статуса')
+        raise BotException('Статус не обнаружен.')
     verdict = HOMEWORK_STATUSES[homework_status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
@@ -105,5 +109,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    print('ok')
+    try:
+        main()
+    except KeyboardInterrupt:
+        logging.info('Vorbei ist vorbei')
