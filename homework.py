@@ -38,7 +38,7 @@ handler = logging.StreamHandler(sys.stdout)
 logger.addHandler(handler)
 
 
-def send_message(bot, message):
+def send_message(bot: Bot, message: str):
     """Отправка сообщения в телеграм."""
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
@@ -48,7 +48,7 @@ def send_message(bot, message):
         return 'Nicht abgesendet!'
 
 
-def get_api_answer(current_timestamp):
+def get_api_answer(current_timestamp: int) -> dict:
     """Запрос к API Яндекса."""
     params = {'from_date': current_timestamp}
     response = requests.get(ENDPOINT, headers=HEADERS, params=params)
@@ -60,7 +60,7 @@ def get_api_answer(current_timestamp):
     return response.json()
 
 
-def check_response(response):
+def check_response(response: dict) -> list:
     """Возврат работ и проверка на корректность данных."""
     if not isinstance(response['homeworks'], list):
         logging.error('Где же мой лист?!')
@@ -69,7 +69,7 @@ def check_response(response):
     return response['homeworks']
 
 
-def parse_status(homework):
+def parse_status(homework: dict) -> str:
     """Проверка статуса работы."""
     homework_name = homework['homework_name']
     homework_status = homework['status']
@@ -81,7 +81,7 @@ def parse_status(homework):
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
-def check_tokens():
+def check_tokens() -> bool:
     """Проверка переменных среды."""
     if PRACTICUM_TOKEN and TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
         logging.info('Es geht!')
@@ -93,16 +93,14 @@ def main():
     """Основная логика работы бота."""
     if not check_tokens():
         return False
-    current_timestamp = int(time.time())
     while True:
         try:
-
+            current_timestamp = 0
             response = get_api_answer(current_timestamp)
             homeworks = check_response(response)
             if len(homeworks) > 0:
                 send_message(BOT, parse_status(homeworks[0]))
             logging.info('Es gibt keine Ausgaben')
-            current_timestamp = response['current_date']
             time.sleep(RETRY_TIME)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
