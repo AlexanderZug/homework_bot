@@ -5,6 +5,6 @@ class BotExceptionSendToTelegram(Exception):
 
 
 class MinorException(Exception):
-    """Штатные исключения не для отправки в телеграм."""
+    """Исключения не для отправки в телеграм."""
 
     pass

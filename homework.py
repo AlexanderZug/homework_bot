@@ -58,7 +58,7 @@ def get_api_answer(current_timestamp: int) -> dict:
     if response.status_code != HTTPStatus.OK:
         raise BotExceptionSendToTelegram(
             f'Bad requests {response.status_code}\n'
-            f'Детали ошибка: {params}, {HEADERS}')
+            f'Детали ошибки: {ENDPOINT}, {params}, {HEADERS}')
     return response.json()
 
 
@@ -68,6 +68,8 @@ def check_response(response: dict) -> list:
             and (isinstance(response.get('current_date'), int))
             and isinstance(response.get('homeworks'), list)):
         raise BotExceptionSendToTelegram('Некорректный тип данных')
+    if not len(response.get('homeworks')):
+        raise MinorException('Нет новостей')
     return response['homeworks']
 
 
@@ -94,17 +96,18 @@ def main():
     """Основная логика работы бота."""
     if not check_tokens():
         logging.critical('Отсутствует необходимое кол-во'
-                         'переменных окружения')
+                         ' переменных окружения')
         sys.exit('Нет переменных окружения')
+    bot = Bot(token=TELEGRAM_TOKEN)
+    current_timestamp = 0
     while True:
         try:
-            bot = Bot(token=TELEGRAM_TOKEN)
-            current_timestamp = int(time.time())
             response = get_api_answer(current_timestamp)
             homeworks = check_response(response)
-            if len(homeworks) > 0:
-                send_message(bot, parse_status(homeworks[0]))
-            logging.info('Нет новых новостей')
+            send_message(bot, parse_status(homeworks[0]))
+            current_timestamp = response.get('current_date')
+        except MinorException as min_error:
+            logging.info(min_error, exc_info=True)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logging.error(message, exc_info=True)
