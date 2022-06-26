@@ -67,9 +67,9 @@ def check_response(response: dict) -> list:
     if not (isinstance(response, dict)
             and (isinstance(response.get('current_date'), int))
             and isinstance(response.get('homeworks'), list)):
-        raise BotExceptionSendToTelegram('Некорректный тип данных')
+        raise TypeError('Некорректный тип данных.')
     if not len(response.get('homeworks')):
-        raise MinorException('Нет новостей')
+        raise MinorException('Нет новостей.')
     return response['homeworks']
 
 
@@ -81,8 +81,7 @@ def parse_status(homework: dict) -> str:
         raise BotExceptionSendToTelegram(
             'Отсутствует необходимое кол-во ключей')
     if homework_status not in HOMEWORK_VERDICTS:
-        raise BotExceptionSendToTelegram(
-            f'Неизвестный статус: {homework_status} ')
+        raise KeyError(f'Неизвестный статус: {homework_status}')
     verdict = HOMEWORK_VERDICTS[homework_status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
