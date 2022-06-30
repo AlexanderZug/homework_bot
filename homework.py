@@ -98,7 +98,7 @@ def main():
                          ' переменных окружения')
         sys.exit('Нет переменных окружения')
     bot = Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = 0
+    current_timestamp = int(time.time())
     while True:
         try:
             response = get_api_answer(current_timestamp)
